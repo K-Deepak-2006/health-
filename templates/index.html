@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical Symptom Analyzer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1E88E5;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #1E88E5;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #1976D2;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .symptoms, .diagnosis {
+            margin-top: 10px;
+        }
+        .disclaimer {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #FFF3E0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Medical Symptom Analyzer</h1>
+    <p>Describe your symptoms for AI-powered analysis</p>
+
+    <div class="form-group">
+        <label for="api-key">Gemini API Key:</label>
+        <input type="password" id="api-key" value="AIzaSyBBugr5_EJvAsWknredcLTbTYGhupmr7x8" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    </div>
+
+    <div class="form-group">
+        <label for="symptoms">Describe your symptoms:</label>
+        <textarea id="symptoms" placeholder="Example: I've been having a fever of 101°F for the past 2 days, with a sore throat and fatigue."></textarea>
+    </div>
+
+    <button id="analyze-btn">Analyze Symptoms</button>
+
+    <div id="loading" class="loading">
+        <p>Analyzing symptoms... Please wait.</p>
+    </div>
+
+    <div id="result" class="result" style="display: none;">
+        <h3>Extracted Symptoms:</h3>
+        <div id="extracted-symptoms" class="symptoms"></div>
+        
+        <h3>Diagnosis Analysis:</h3>
+        <div id="diagnosis" class="diagnosis"></div>
+    </div>
+
+    <div class="disclaimer">
+        <p>⚠️ <strong>Disclaimer:</strong> This tool is for informational purposes only and does not replace professional medical advice. Always consult with a healthcare provider for diagnosis and treatment.</p>
+    </div>
+
+    <script>
+        document.getElementById('analyze-btn').addEventListener('click', async () => {
+            const apiKey = document.getElementById('api-key').value;
+            const symptoms = document.getElementById('symptoms').value;
+            
+            if (!symptoms) {
+                alert('Please enter your symptoms');
+                return;
+            }
+            
+            // Show loading message
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        text: symptoms,
+                        api_key: apiKey
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const data = await response.json();
+                
+                // Display results
+                document.getElementById('extracted-symptoms').innerHTML = data.extracted_symptoms;
+                document.getElementById('diagnosis').innerHTML = data.diagnosis;
+                document.getElementById('result').style.display = 'block';
+            } catch (error) {
+                alert('Error analyzing symptoms: ' + error.message);
+            } finally {
+                // Hide loading message
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+    
