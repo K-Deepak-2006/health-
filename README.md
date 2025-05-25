@@ -1,4 +1,4 @@
-# TZ_Hackathon Health Assistant
+ Health Assistant
 
 A web application with AI-powered health tools including a symptom checker and an AI health assistant chatbot.
 
